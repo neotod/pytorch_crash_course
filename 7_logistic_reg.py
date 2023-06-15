@@ -6,7 +6,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 
 epochs = 5000
-lr = 0.1
+lr = 0.01
 train_stop_loss_th = 0.1
 
 x_np, y_np = load_breast_cancer(return_X_y=True)
@@ -51,12 +51,15 @@ for ep in range(epochs):
     y_pred = m(x_train)
 
     loss_i = l(y_pred, y_train)
-    loss_i.backward()
 
     if loss_i < train_stop_loss_th:
         print(f"training stopped at epoch #{ep}")
         break
 
+    
+
+    opt.zero_grad()
+    loss_i.backward()
     # if ep % 5 == 0:
     #     w, b = m.parameters()
 
@@ -64,10 +67,11 @@ for ep in range(epochs):
     #     print(f"w_grad: {w.grad} | b: {b.grad}")
 
     opt.step()
-    opt.zero_grad()
 
     if ep % 5 == 0:
-        print(f"epoch: {ep} | loss: {loss_i}")
+        acc_i = y_pred.round().eq(y_train).sum().item() / len(y_train)
+        
+        print(f"epoch: {ep} | loss: {loss_i} | acc: {acc_i}")
 
         # print()
 

@@ -1,3 +1,4 @@
+from torchinfo import summary
 from typing import Any
 import torch
 import os
@@ -92,31 +93,47 @@ class Cifar100ClfPretained(nn.Module):
 
 m = Cifar100ClfPretained().to(device)
 
-loss_ = nn.CrossEntropyLoss()
-opt = torch.optim.Adam(m.parameters(), lr=learning_rate)
-step_lr_sched = torch.optim.lr_scheduler.StepLR(opt, step_size=7, gamma=0.1)
-
-for ep in range(epochs):
-    ep_train_loss_sum = 0
-    for (x, y) in train_loader:
-        x = x.to(device)
-        y = y.to(device)
-
-        y_pred = m(x)
-
-        loss_i = loss_(y_pred, y)
-        ep_train_loss_sum += loss_i
-
-    ep_val_loss_sum = 0
-    for (x, y) in train_loader:
-        x = x.to(device)
-        y = y.to(device)
-
-        y_pred = m(x)
-
-        loss_i = loss_(y_pred, y)
-        ep_val_loss_sum += loss_i
-
-    print(
-        f"epoch: {ep} | train_loss: {ep_train_loss_sum / batch_size} | val_loss: {ep_val_loss_sum / batch_size}"
+print(
+    summary(
+        model=m,
+        input_size=(
+            32,
+            3,
+            224,
+            224,
+        ),  # make sure this is "input_size", not "input_shape"
+        # col_names=["input_size"], # uncomment for smaller output
+        col_names=["input_size", "output_size", "num_params", "trainable"],
+        col_width=20,
+        row_settings=["var_names"],
     )
+)
+
+# loss_ = nn.CrossEntropyLoss()
+# opt = torch.optim.Adam(m.parameters(), lr=learning_rate)
+# step_lr_sched = torch.optim.lr_scheduler.StepLR(opt, step_size=7, gamma=0.1)
+
+# for ep in range(epochs):
+#     ep_train_loss_sum = 0
+#     for (x, y) in train_loader:
+#         x = x.to(device)
+#         y = y.to(device)
+
+#         y_pred = m(x)
+
+#         loss_i = loss_(y_pred, y)
+#         ep_train_loss_sum += loss_i
+
+#     ep_val_loss_sum = 0
+#     for (x, y) in train_loader:
+#         x = x.to(device)
+#         y = y.to(device)
+
+#         y_pred = m(x)
+
+#         loss_i = loss_(y_pred, y)
+#         ep_val_loss_sum += loss_i
+
+#     print(
+#         f"epoch: {ep} | train_loss: {ep_train_loss_sum / batch_size} | val_loss: {ep_val_loss_sum / batch_size}"
+#     )

@@ -44,10 +44,10 @@ for ep in range(epochs):
         print(f"stopping at epoch {ep}")
         break
 
+    opt.zero_grad()
     loss_i.backward()
 
     opt.step()
-    opt.zero_grad()
 
     w, b = m.parameters()
     if ep % 5 == 0:
